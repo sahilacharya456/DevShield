@@ -1,0 +1,125 @@
+# DevShield AI — Default Security Rules
+# These rules apply to ALL languages on top of Gemini's AI analysis.
+# Format: name, pattern (regex), severity, owasp_id, description
+
+rules:
+
+  # ── Hardcoded Credentials ──────────────────────────────────────────────────
+
+  - name: "Hardcoded Password"
+    pattern: '(?i)(password|passwd|pwd)\s*=\s*["\'][^"\']{3,}["\']'
+    severity: CRITICAL
+    owasp_id: "A07:2021"
+    description: "Hardcoded password detected. Use environment variables or a secrets manager."
+
+  - name: "Hardcoded API Key"
+    pattern: '(?i)(api_key|apikey|api-key|secret_key|access_key)\s*=\s*["\'][A-Za-z0-9_\-]{16,}["\']'
+    severity: CRITICAL
+    owasp_id: "A07:2021"
+    description: "Hardcoded API key or secret detected. Move to environment variables."
+
+  - name: "Hardcoded Token"
+    pattern: '(?i)(token|auth_token|access_token|bearer)\s*=\s*["\'][A-Za-z0-9_\-\.]{20,}["\']'
+    severity: CRITICAL
+    owasp_id: "A07:2021"
+    description: "Hardcoded token detected. Tokens must never appear in source code."
+
+  - name: "Private Key in Code"
+    pattern: '-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----'
+    severity: CRITICAL
+    owasp_id: "A02:2021"
+    description: "Private key material detected directly in source code."
+
+  # ── Weak Cryptography ──────────────────────────────────────────────────────
+
+  - name: "MD5 Usage"
+    pattern: '(?i)\b(md5|hashlib\.md5|MD5\.new)\b'
+    severity: HIGH
+    owasp_id: "A02:2021"
+    description: "MD5 is cryptographically broken. Use SHA-256 or SHA-3."
+
+  - name: "SHA-1 Usage"
+    pattern: '(?i)\b(sha1|hashlib\.sha1|SHA1\.new)\b'
+    severity: HIGH
+    owasp_id: "A02:2021"
+    description: "SHA-1 is deprecated and vulnerable to collision attacks. Use SHA-256+."
+
+  - name: "Weak Random (random.random)"
+    pattern: '(?i)\brandom\.(random|randint|choice|shuffle)\b'
+    severity: MEDIUM
+    owasp_id: "A02:2021"
+    description: "Python random module is not cryptographically secure. Use secrets module."
+
+  # ── Injection Patterns ────────────────────────────────────────────────────
+
+  - name: "Raw SQL String Concatenation"
+    pattern: '(?i)(execute|query)\s*\(\s*["\'].*\+|f["\'].*SELECT|f["\'].*INSERT|f["\'].*UPDATE|f["\'].*DELETE'
+    severity: CRITICAL
+    owasp_id: "A03:2021"
+    description: "String concatenation in SQL query creates injection risk. Use parameterized queries."
+
+  - name: "eval() Usage"
+    pattern: '\beval\s*\('
+    severity: HIGH
+    owasp_id: "A03:2021"
+    description: "eval() executes arbitrary code. This is dangerous with user-controlled input."
+
+  - name: "exec() Usage"
+    pattern: '\bexec\s*\('
+    severity: HIGH
+    owasp_id: "A03:2021"
+    description: "exec() executes arbitrary code. Avoid with untrusted input."
+
+  - name: "Shell=True in subprocess"
+    pattern: '(?i)subprocess\.(run|call|Popen|check_output).*shell\s*=\s*True'
+    severity: HIGH
+    owasp_id: "A03:2021"
+    description: "shell=True with user input enables command injection. Pass args as list."
+
+  - name: "os.system() Usage"
+    pattern: '\bos\.system\s*\('
+    severity: HIGH
+    owasp_id: "A03:2021"
+    description: "os.system() is vulnerable to command injection. Use subprocess with a list."
+
+  # ── Insecure Deserialization ───────────────────────────────────────────────
+
+  - name: "Unsafe pickle.loads()"
+    pattern: '(?i)\bpickle\.(loads|load)\b'
+    severity: HIGH
+    owasp_id: "A08:2021"
+    description: "Unpickling untrusted data enables remote code execution."
+
+  - name: "Unsafe yaml.load()"
+    pattern: '(?i)\byaml\.load\s*\([^,)]*\)'
+    severity: HIGH
+    owasp_id: "A08:2021"
+    description: "yaml.load() with untrusted input is unsafe. Use yaml.safe_load() instead."
+
+  # ── Debugging / Misconfiguration ──────────────────────────────────────────
+
+  - name: "Debug Mode Enabled"
+    pattern: '(?i)(debug\s*=\s*True|app\.run.*debug\s*=\s*True)'
+    severity: MEDIUM
+    owasp_id: "A05:2021"
+    description: "Debug mode must never be enabled in production. Exposes stack traces."
+
+  - name: "TODO Security Comment"
+    pattern: '(?i)#\s*(todo|fixme|hack|xxx|security|unsafe)\b'
+    severity: INFO
+    owasp_id: "A04:2021"
+    description: "Security-related comment found. Ensure this is properly addressed."
+
+  # ── Sensitive Data Exposure ────────────────────────────────────────────────
+
+  - name: "Logging Sensitive Data"
+    pattern: '(?i)(log|print|console\.log)\s*\(.*?(password|secret|token|key|credential)'
+    severity: HIGH
+    owasp_id: "A09:2021"
+    description: "Sensitive data being logged. This may expose credentials in log files."
+
+  - name: "Exception Details Exposed"
+    pattern: '(?i)return\s+str\s*\(\s*(e|err|error|exception)\s*\)'
+    severity: MEDIUM
+    owasp_id: "A05:2021"
+    description: "Returning raw exception messages can leak internal implementation details."
