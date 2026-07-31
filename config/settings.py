@@ -16,9 +16,15 @@ APP_NAME = "DevShield AI"
 APP_VERSION = "1.0.0"
 APP_OWNER = os.getenv("APP_OWNER", "Sahil")
 
-# ─── Gemini API ───────────────────────────────────────────────────────────────
+# ─── LLM Providers ────────────────────────────────────────────────────────────
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama3-70b-8192")
+
+# Either 'gemini' or 'groq'
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
 BASE_DIR = _root
@@ -80,3 +86,7 @@ def score_to_grade(score: int) -> str:
     if score >= 60: return "C"
     if score >= 40: return "D"
     return "F"
+
+# ─── Security Limits ─────────────────────────────────────────────────────────
+MAX_CODE_LENGTH = 100000  # Max characters allowed for a single scan/generation
+TIMEOUT_SECONDS = 30      # Timeout for external API calls and scanners
