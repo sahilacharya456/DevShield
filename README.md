@@ -1,14 +1,3 @@
-<img width="1915" height="972" alt="Screenshot 2026-07-31 224247" src="https://github.com/user-attachments/assets/375833d0-6a6c-4b9d-8710-dd8e668f8575" />
-<img width="1919" height="964" alt="Screenshot 2026-07-31 224306" src="https://github.com/user-attachments/assets/518cf3bd-e0a7-442f-919e-17578ee01b32" />
-<img width="1918" height="966" alt="Screenshot 2026-07-31 224320" src="https://github.com/user-attachments/assets/e0e789a9-f8eb-4c05-94fc-280f53687325" />
-<img width="1918" height="969" alt="Screenshot 2026-07-31 224333" src="https://github.com/user-attachments/assets/f61cadb8-1b61-4050-b29b-237ad21d297e" />
-<img width="1919" height="898" alt="Screenshot 2026-07-31 224349" src="https://github.com/user-attachments/assets/2897e6c4-7f82-4d34-a0e4-b4352a8ae27d" />
-<img width="1919" height="898" alt="Screenshot 2026-07-31 224406" src="https://github.com/user-attachments/assets/5dffe6ed-93a8-4973-9781-a05cbbf27c02" />
-<img width="1919" height="904" alt="Screenshot 2026-07-31 224437" src="https://github.com/user-attachments/assets/d6d23a89-90ee-473c-b2c5-4b354e340558" />
-<img width="1919" height="976" alt="Screenshot 2026-07-31 224450" src="https://github.com/user-attachments/assets/53dfe1fa-3747-4427-8758-53650ecc2338" />
-<img width="1919" height="964" alt="Screenshot 2026-07-31 224647" src="https://github.com/user-attachments/assets/91907520-714b-4861-89d0-df684395d471" />
-<div align="center">
-  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield.svg" width="100" height="100" alt="DevShield AI X"/>
   <h1>DevShield AI X</h1>
   <p><strong>The Next-Generation Enterprise DevSecOps Platform</strong></p>
   <p>Powered by Isolation Forests, DGA ML Detectors, and True RAG Auto-Fixing.</p>
@@ -90,3 +79,15 @@ The `Arsenal` module dynamically interfaces with native CLI tools and API servic
 <div align="center">
   Built with ❤️ for the DevSecOps Community.
 </div>
+
+<img width="1915" height="972" alt="Screenshot 2026-07-31 224247" src="https://github.com/user-attachments/assets/375833d0-6a6c-4b9d-8710-dd8e668f8575" />
+<img width="1919" height="964" alt="Screenshot 2026-07-31 224306" src="https://github.com/user-attachments/assets/518cf3bd-e0a7-442f-919e-17578ee01b32" />
+<img width="1918" height="966" alt="Screenshot 2026-07-31 224320" src="https://github.com/user-attachments/assets/e0e789a9-f8eb-4c05-94fc-280f53687325" />
+<img width="1918" height="969" alt="Screenshot 2026-07-31 224333" src="https://github.com/user-attachments/assets/f61cadb8-1b61-4050-b29b-237ad21d297e" />
+<img width="1919" height="898" alt="Screenshot 2026-07-31 224349" src="https://github.com/user-attachments/assets/2897e6c4-7f82-4d34-a0e4-b4352a8ae27d" />
+<img width="1919" height="898" alt="Screenshot 2026-07-31 224406" src="https://github.com/user-attachments/assets/5dffe6ed-93a8-4973-9781-a05cbbf27c02" />
+<img width="1919" height="904" alt="Screenshot 2026-07-31 224437" src="https://github.com/user-attachments/assets/d6d23a89-90ee-473c-b2c5-4b354e340558" />
+<img width="1919" height="976" alt="Screenshot 2026-07-31 224450" src="https://github.com/user-attachments/assets/53dfe1fa-3747-4427-8758-53650ecc2338" />
+<img width="1919" height="964" alt="Screenshot 2026-07-31 224647" src="https://github.com/user-attachments/assets/91907520-714b-4861-89d0-df684395d471" />
+<div align="center">
+  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield.svg" width="100" height="100" alt="DevShield AI X"/>
