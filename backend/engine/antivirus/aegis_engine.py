@@ -1,7 +1,10 @@
 import os
 import math
 import structlog
-import yara
+try:
+    import yara
+except ImportError:
+    yara = None
 from cryptography.fernet import Fernet
 from typing import Dict, Any
 
@@ -38,12 +41,21 @@ rule Generic_Trojan {
 
 class AegisEngine:
     def __init__(self):
-        self.rules = yara.compile(source=YARA_RULES)
+        self.rules = yara.compile(source=YARA_RULES) if yara else None
         self.quarantine_dir = os.path.join("backend", "quarantine_vault")
         os.makedirs(self.quarantine_dir, exist_ok=True)
-        # In a real system, this key must be securely managed in a KMS or Vault.
-        # For FYP purposes, we use a static derived key to lock the malware.
-        self.cipher = Fernet(Fernet.generate_key())
+        
+        # Load or generate persistent key
+        key_file = os.path.join("backend", ".aegis_master.key")
+        if os.path.exists(key_file):
+            with open(key_file, "rb") as f:
+                key = f.read()
+        else:
+            key = Fernet.generate_key()
+            with open(key_file, "wb") as f:
+                f.write(key)
+        
+        self.cipher = Fernet(key)
 
     def calculate_entropy(self, data: bytes) -> float:
         if not data:
@@ -84,7 +96,7 @@ class AegisEngine:
             data = f.read()
             
         entropy = self.calculate_entropy(data)
-        matches = self.rules.match(data=data)
+        matches = self.rules.match(data=data) if self.rules else []
         
         is_malicious = len(matches) > 0 or entropy > 7.5
         

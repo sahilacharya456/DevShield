@@ -55,6 +55,7 @@ const NAV_SECTIONS = [
   {
     title: "Platform",
     items: [
+      { href: "/users", icon: "👥", label: "Users & Access" },
       { href: "/compliance", icon: "📋", label: "Compliance" },
       { href: "/reports", icon: "📑", label: "Reports Center" },
       { href: "/billing", icon: "💳", label: "Billing & Pro" },

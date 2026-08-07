@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.database import get_db
 from backend.ai.ai_router import AIRouter
 from backend.config import settings
-from backend.security.auth import get_current_user
+from backend.security.auth import get_current_user, get_current_admin
 from backend.models.orm import User
 import asyncio
 
@@ -24,7 +24,7 @@ class ChatResponse(BaseModel):
 async def chat_with_soc(
     payload: ChatMessage,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_admin)
 ):
     """
     DevShield Security Operations Center (SOC) Copilot.
@@ -41,6 +41,9 @@ async def chat_with_soc(
             )
             prompt = f"{system_instruction}\n\nUser Security Query: {payload.message}"
             text, tokens, model_used = await ai_router.route_request(prompt)
+            if model_used == "Local Expert Engine":
+                raise Exception("AI router fell back to generic offline engine. Triggering detailed SOC fallback.")
+            
             return ChatResponse(
                 reply=text,
                 sources_referenced=[model_used, "AST Syntax Database", "CVE Intelligence Feed"]

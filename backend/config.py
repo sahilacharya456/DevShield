@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     nvd_api_key: str = ""
     allowed_scan_targets: str = ""
     allow_private_scan_targets: bool = True
+    
+    # CORS Configuration
+    allowed_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # Database URL override. Use postgresql+asyncpg://... in production.
     database_url: Optional[str] = None
@@ -28,7 +31,7 @@ class Settings(BaseSettings):
     postgres_db: str = "devshield"
 
     # JWT Authentication
-    secret_key: str = os.getenv("SECRET_KEY", os.urandom(32).hex())
+    secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 120
     refresh_token_expire_days: int = 7

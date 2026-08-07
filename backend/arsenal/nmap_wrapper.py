@@ -1,5 +1,6 @@
 import asyncio
 import xml.etree.ElementTree as ET
+import re
 import structlog
 from typing import AsyncGenerator, List, Dict, Any
 
@@ -26,6 +27,11 @@ class NmapScanner:
             "stealth": ["-sS", "-T2", "-f", "--data-length", "25"],
         }.get(scan_type, ["-sV", "-T4"])
 
+        # Strict validation to prevent injection
+        if not re.match(r"^[a-zA-Z0-9.-]+$", target):
+            yield "[ERROR] Invalid target format."
+            return
+
         cmd = ["nmap"] + scan_args + [target]
         logger.info("Nmap scan starting", cmd=" ".join(cmd))
 
@@ -41,28 +47,7 @@ class NmapScanner:
 
             await process.wait()
         except FileNotFoundError:
-            # --- FYP Windows Simulation ---
-            yield f"Starting Nmap 7.93 ( https://nmap.org ) at {asyncio.get_event_loop().time()}"
-            yield f"NSE: Loaded 153 scripts for scanning."
-            await asyncio.sleep(1.0)
-            yield f"Nmap scan report for {target}"
-            yield f"Host is up (0.012s latency)."
-            yield f"Not shown: 995 closed tcp ports (reset)"
-            yield f"PORT     STATE SERVICE VERSION"
-            yield f"22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.5"
-            yield f"80/tcp   open  http    nginx 1.18.0"
-            yield f"443/tcp  open  https   nginx 1.18.0"
-            yield f"3306/tcp open  mysql   MySQL 8.0.32"
-            yield f"6379/tcp open  redis   Redis key-value store"
-            await asyncio.sleep(1.5)
-            yield f"\nHost script results:"
-            yield f"|_clock-skew: mean: 1s, deviation: 0s, median: 0s"
-            yield f"| mysql-info:"
-            yield f"|_  Protocol: 10"
-            yield f"|_  Version: 8.0.32"
-            yield f"|_  VULNERABILITY DETECTED: Authentication Bypass (CRITICAL)"
-            await asyncio.sleep(0.5)
-            yield f"\nNmap done: 1 IP address (1 host up) scanned in 3.42 seconds"
+            yield "[ERROR] Nmap executable not found. Please install Nmap."
         except Exception as e:
             yield f"[ERROR] Nmap failed: {e}"
 
@@ -71,6 +56,9 @@ class NmapScanner:
         Run nmap with XML output and return structured findings.
         """
         findings: List[Dict[str, Any]] = []
+        if not re.match(r"^[a-zA-Z0-9.-]+$", target):
+            return [{"error": "Invalid target format", "severity": "INFO"}]
+
         cmd = ["nmap", "-sV", "-sC", "--script=vuln", "-oX", "-", "-T4", target]
 
         try:

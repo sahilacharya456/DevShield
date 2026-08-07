@@ -10,6 +10,8 @@ from backend.models.database import get_db
 from backend.models.orm import User, Organization
 from backend.security.auth import verify_password, get_password_hash, create_access_token, get_current_user
 from backend.config import settings
+from backend.security.rate_limiter import limiter
+from fastapi import Request
 
 router = APIRouter()
 
@@ -74,7 +76,9 @@ async def reset_password(
     return {"message": "Password reset successfully"}
 
 @router.post("/login", response_model=Token)
+@limiter.limit("5/minute")
 async def login_access_token(
+    request: Request,
     db: AsyncSession = Depends(get_db), 
     form_data: OAuth2PasswordRequestForm = Depends()
 ):

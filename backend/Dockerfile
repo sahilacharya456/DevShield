@@ -18,10 +18,8 @@ RUN sed -i 's/Components: main/Components: main contrib non-free non-free-firmwa
     nmap \
     && rm -rf /var/lib/apt/lists/*
 
-COPY .docker_wheels /wheels
-COPY backend/requirements-runtime.txt .
-RUN pip install --disable-pip-version-check --no-cache-dir --no-index --find-links=/wheels -r requirements-runtime.txt \
-    && rm -rf /wheels
+COPY backend/requirements.txt .
+RUN pip install --disable-pip-version-check --no-cache-dir -r requirements.txt
 
 COPY . .
 

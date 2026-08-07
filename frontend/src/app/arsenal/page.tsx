@@ -105,10 +105,10 @@ export default function Arsenal() {
         if (data.dbms) addLine(`[INFO] DBMS: ${data.dbms}`, "warning");
         setResults(data);
       } else {
-        addLine(`[INFO] Opening WebSocket stream for Nmap...`, "info");
+        addLine(`[INFO] Opening WebSocket stream for ${selectedTool.name}...`, "info");
         const wsProto = window.location.protocol === "https:" ? "wss" : "ws";
         const wsHost = new URL(API_URL).host;
-        const wsUrl = `${wsProto}://${wsHost}/api/v1/arsenal/nmap/stream`;
+        const wsUrl = `${wsProto}://${wsHost}/api/v1/arsenal/${selectedTool.id}/stream`;
         const ws = new WebSocket(wsUrl);
         ws.onopen = () => ws.send(JSON.stringify({ target, scan_type: scanType }));
         ws.onmessage = (evt) => {

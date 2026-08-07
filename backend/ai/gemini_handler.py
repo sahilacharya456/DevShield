@@ -1,18 +1,19 @@
 import os
 import structlog
+from fastapi import HTTPException
 from backend.config import settings
 
 logger = structlog.get_logger()
 
 class GeminiHandler:
-    def __init__(self, model_name: str = "gemini-1.5-pro"):
+    def __init__(self, model_name: str = None):
         self.model = None
-        self.model_name = model_name
+        self.model_name = model_name or getattr(settings, "gemini_model", "gemini-2.0-flash")
         try:
             import google.generativeai as genai
             if settings.gemini_api_key:
                 genai.configure(api_key=settings.gemini_api_key)
-                self.model = genai.GenerativeModel(model_name)
+                self.model = genai.GenerativeModel(self.model_name)
         except Exception as e:
             logger.warning(f"Gemini SDK unavailable: {e}")
 
@@ -28,4 +29,4 @@ class GeminiHandler:
             return response.text, token_count
         except Exception as e:
             logger.error(f"Gemini API Error: {str(e)}")
-            raise e
+            raise HTTPException(status_code=502, detail="Upstream AI provider failed.")

@@ -29,9 +29,12 @@ export default function SocAssistant() {
         body: JSON.stringify({ message: userMessage })
       });
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || `API request failed with status ${res.status}`);
+      }
       setMessages(prev => [...prev, { role: "bot", content: data.reply }]);
-    } catch (err) {
-      setMessages(prev => [...prev, { role: "bot", content: "Connection to SOC API failed. Running in offline fallback mode." }]);
+    } catch (err: any) {
+      setMessages(prev => [...prev, { role: "bot", content: `Error: ${err.message || "Connection to SOC API failed."}` }]);
     } finally {
       setLoading(false);
     }

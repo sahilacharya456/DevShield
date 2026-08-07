@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import structlog
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from backend.security.rate_limiter import limiter
 
 from backend.config import settings
 from backend.models.database import init_db
@@ -16,7 +16,8 @@ from backend.api import (
     routes_autofix, routes_reports,
     routes_quantum, routes_cognitive, routes_promptshield,
     routes_exploit_intel, routes_killchain,
-    routes_api_keys, routes_billing, routes_jobs, routes_projects
+    routes_api_keys, routes_billing, routes_jobs, routes_projects,
+    routes_users
 )
 
 # New 10/10 routes — Revolutionary Modules
@@ -27,7 +28,6 @@ from backend.api import (
 )
 
 logger = structlog.get_logger()
-limiter = Limiter(key_func=get_remote_address)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -62,11 +62,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # CORS — allow Next.js dev + production domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://devshield.ai",  # Production domain placeholder
-    ],
+    allow_origins=[origin.strip() for origin in settings.allowed_origins.split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Authorization", "Content-Type", "Accept", "X-Request-ID"],
@@ -89,6 +85,7 @@ app.include_router(routes_api_keys.router,  prefix=f"{settings.api_v1_str}/apike
 app.include_router(routes_billing.router,   prefix=f"{settings.api_v1_str}/billing",   tags=["💳 Billing"])
 app.include_router(routes_jobs.router,      prefix=f"{settings.api_v1_str}/jobs",      tags=["Background Jobs"])
 app.include_router(routes_projects.router,  prefix=f"{settings.api_v1_str}/projects",  tags=["📦 Projects"])
+app.include_router(routes_users.router,     prefix=f"{settings.api_v1_str}/users",     tags=["👥 User Management"])
 
 # ── AI Intelligence Modules ────────────────────────────────────────────────
 app.include_router(routes_quantum.router, prefix=f"{settings.api_v1_str}/quantum", tags=["QuantumVault™"])

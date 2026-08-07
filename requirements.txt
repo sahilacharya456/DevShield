@@ -56,3 +56,4 @@ PyYAML>=6.0.1
 psutil>=5.9.0
 networkx>=3.3
 stripe>=8.0.0
+yara-python>=3.11.0

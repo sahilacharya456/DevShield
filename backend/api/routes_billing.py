@@ -7,7 +7,7 @@ import os
 
 from backend.models.database import get_db
 from backend.models.orm import User, Organization
-from backend.security.auth import get_current_user
+from backend.security.auth import get_current_user, get_current_admin
 from backend.config import settings
 
 # Usually these come from config, fallback to os.getenv or mock keys
@@ -79,3 +79,23 @@ async def stripe_webhook(request: Request, db: AsyncSession = Depends(get_db)):
                 await db.commit()
             
     return {"status": "success"}
+
+class AdminGrantRequest(BaseModel):
+    organization_id: int
+    plan: str
+
+@router.post("/admin-grant")
+async def admin_grant_subscription(
+    req: AdminGrantRequest,
+    db: AsyncSession = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    """Allow an admin to allocate a free subscription (pro or enterprise) to an organization"""
+    result = await db.execute(select(Organization).filter(Organization.id == req.organization_id))
+    org = result.scalars().first()
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+        
+    org.subscription_tier = req.plan
+    await db.commit()
+    return {"status": "success", "message": f"Successfully granted {req.plan} subscription to {org.name}"}

@@ -21,7 +21,7 @@ class AutoFixEngine:
             genai.configure(api_key=settings.gemini_api_key)
             self.client = instructor.from_gemini(
                 client=genai.GenerativeModel(
-                    model_name=os.getenv("GEMINI_MODEL", "gemini-1.5-pro"),
+                    model_name=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
                 ),
                 mode=instructor.Mode.GEMINI_JSON,
             )

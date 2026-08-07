@@ -21,6 +21,7 @@ export default function DashboardPage() {
     const fetchDashboard = async () => {
       const token = localStorage.getItem("access_token");
       if (!token) {
+        setLoading(false);
         router.push("/auth");
         return;
       }
@@ -32,6 +33,7 @@ export default function DashboardPage() {
         
         if (res.status === 401) {
           localStorage.removeItem("access_token");
+          setLoading(false);
           router.push("/auth");
           return;
         }

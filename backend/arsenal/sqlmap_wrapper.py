@@ -1,5 +1,7 @@
 import asyncio
+import re
 import structlog
+from urllib.parse import urlparse
 from typing import AsyncGenerator, Dict, Any
 
 logger = structlog.get_logger("DevShield.Arsenal.SQLMap")
@@ -19,6 +21,11 @@ class SQLMapScanner:
         """
         yield f"[INFO] Initializing SQLMap against: {target_url}"
         yield f"[INFO] Level: {level} | Risk: {risk} | Technique: BEUQ"
+
+        parsed = urlparse(target_url)
+        if parsed.scheme not in ('http', 'https') or not parsed.netloc:
+            yield "[ERROR] Invalid URL format."
+            return
 
         cmd = [
             "sqlmap",
@@ -43,31 +50,7 @@ class SQLMapScanner:
                 yield decoded
             await process.wait()
         except FileNotFoundError:
-            # --- FYP Windows Simulation ---
-            yield f"        ___"
-            yield f"       __H__"
-            yield f" ___ ___[,]_____ ___ ___  {{1.7.4#dev}}"
-            yield f"|_ -| . [']     | .'| . |"
-            yield f"|___|_  [.]_|_|_|__,|  _|"
-            yield f"      |_|V...       |_|   https://sqlmap.org"
-            await asyncio.sleep(1.0)
-            yield f"[INFO] testing connection to the target URL"
-            yield f"[INFO] testing if the target URL content is stable"
-            await asyncio.sleep(0.8)
-            yield f"[INFO] target URL is stable"
-            yield f"[INFO] testing if GET parameter 'id' is dynamic"
-            await asyncio.sleep(1.5)
-            yield f"[WARNING] GET parameter 'id' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N"
-            yield f"sqlmap identified the following injection point(s) with a total of 46 HTTP(s) requests:"
-            yield f"---"
-            yield f"Parameter: id (GET)"
-            yield f"    Type: boolean-based blind"
-            yield f"    Title: AND boolean-based blind - WHERE or HAVING clause"
-            yield f"    Payload: id=1 AND 8888=8888"
-            yield f"---"
-            await asyncio.sleep(0.5)
-            yield f"[INFO] the back-end DBMS is MySQL"
-            yield f"[INFO] fetched data logged to text files under '/tmp/devshield_sqlmap'"
+            yield "[ERROR] SQLMap executable not found. Please install SQLMap."
         except Exception as e:
             yield f"[ERROR] SQLMap failed: {e}"
 

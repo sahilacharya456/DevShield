@@ -23,10 +23,11 @@ export default function AegisAntivirusPage() {
     formData.append("file", file);
 
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem("access_token") : null;
       const response = await fetch("http://127.0.0.1:8000/api/v1/antivirus/scan", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer sahil_admin_token", // Simulated auth
+          "Authorization": `Bearer ${token}`,
         },
         body: formData,
       });

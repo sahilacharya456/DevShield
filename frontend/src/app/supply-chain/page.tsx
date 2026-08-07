@@ -23,7 +23,10 @@ export default function ChainBreakerPage() {
 
   const pollJob = async (id: string) => {
     for (let attempt = 0; attempt < 60; attempt += 1) {
-      const res = await fetch(`${API_URL}/api/v1/jobs/${id}`);
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+      const res = await fetch(`${API_URL}/api/v1/jobs/${id}`, {
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+      });
       if (!res.ok) throw new Error(await res.text());
 
       const job = await res.json();
@@ -46,9 +49,13 @@ export default function ChainBreakerPage() {
     setError("");
     setJobId("");
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
       const res = await fetch(`${API_URL}/api/v1/jobs/scans/supply-chain`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ manifest_name: manifestName, manifest_content: manifestContent }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -69,9 +76,13 @@ export default function ChainBreakerPage() {
     setError("");
     setJobId("");
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
       const res = await fetch(`${API_URL}/api/v1/supplychain/run`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ target }),
       });
       if (!res.ok) throw new Error(await res.text());

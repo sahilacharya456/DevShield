@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional, Any
 from jose import JWTError, jwt
 import bcrypt
+import hashlib
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -20,14 +21,18 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
             hashed_bytes = hashed_password.encode('utf-8')
         else:
             hashed_bytes = hashed_password
-        return bcrypt.checkpw(plain_password.encode('utf-8')[:72], hashed_bytes)
+        
+        # Hash with sha256 first to prevent bcrypt's 72-byte truncation
+        pre_hashed = hashlib.sha256(plain_password.encode('utf-8')).hexdigest().encode('utf-8')
+        return bcrypt.checkpw(pre_hashed, hashed_bytes)
     except Exception:
         return False
 
 def get_password_hash(password: str) -> str:
-    pwd_bytes = password.encode('utf-8')[:72]
+    # Hash with sha256 first to prevent bcrypt's 72-byte truncation
+    pre_hashed = hashlib.sha256(password.encode('utf-8')).hexdigest().encode('utf-8')
     salt = bcrypt.gensalt()
-    return bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
+    return bcrypt.hashpw(pre_hashed, salt).decode('utf-8')
 
 def create_access_token(subject: str | Any, expires_delta: Optional[timedelta] = None) -> str:
     if expires_delta:
